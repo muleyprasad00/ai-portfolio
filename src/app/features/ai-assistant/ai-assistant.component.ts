@@ -32,7 +32,7 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
             <mat-icon class="ai-icon">smart_toy</mat-icon>
             <div>
               <h2>Chat</h2>
-              <p class="chat-description">Powered by AI — ask about skills, projects, or experience</p>
+              <p class="chat-description">Powered by portfolio data - ask about skills, projects, or experience</p>
             </div>
           </div>
 
@@ -97,9 +97,8 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
         <div class="page-card info-card">
           <h3>About This Assistant</h3>
           <p>
-            This AI assistant is designed to answer questions about my background, skills,
-            projects, and experience. The integration with Genkit is coming soon for more
-            advanced AI capabilities.
+            This assistant uses the portfolio data bundled with the site and responds without a
+            backend.
           </p>
           <p class="features-title">Current Features:</p>
           <ul>
@@ -361,7 +360,7 @@ export class AiAssistantComponent implements OnInit {
 
   ngOnInit(): void {
     this.aiService.addMessage(
-      "Hi! I'm your AI assistant. Ask me anything about Prasad's background, skills, projects, or experience!",
+      "Hi! I'm your portfolio assistant. Ask me anything about Prasad's background, skills, projects, or experience!",
       'assistant'
     );
 

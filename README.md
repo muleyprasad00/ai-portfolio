@@ -36,6 +36,33 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+## Deploying to Firebase Hosting
+
+This repo is set up for static Firebase Hosting. The assistant page now uses the portfolio data
+bundled with the app, so you do not need Cloud Functions for deployment.
+
+1. Install the Firebase CLI if you do not have it yet:
+
+```bash
+npm install -g firebase-tools
+```
+
+2. Log in and select your Firebase project:
+
+```bash
+firebase login
+firebase use <your-project-id>
+```
+
+3. Deploy the site:
+
+```bash
+npm run deploy:firebase
+```
+
+The hosting config serves `dist/ai-portfolio/browser` and rewrites unknown routes to
+`index.html`, which keeps Angular routing working after refresh.
+
 ## Running unit tests
 
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:

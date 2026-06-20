@@ -10,6 +10,7 @@ import { join } from 'node:path';
 import 'dotenv/config';
 
 import { askPortfolioAssistant } from '../src/app/genkit/flows/portfolio-chat';
+import type { ChatHistoryMessage } from './app/core/interfaces/app.interface';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -54,8 +55,9 @@ app.post('/api/genkit-stream', express.json(), async (req, res) => {
   try {
 
     const prompt = req.body?.prompt ?? '';
+    const history = Array.isArray(req.body?.history) ? (req.body.history as ChatHistoryMessage[]) : [];
 
-    const answer = await askPortfolioAssistant(prompt);
+    const answer = await askPortfolioAssistant(prompt, history);
 
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache');

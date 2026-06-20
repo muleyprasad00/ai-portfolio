@@ -2,31 +2,23 @@
 
 import { z } from 'genkit';
 import { ai } from '../genkit';
-
-interface HistoryMessage {
-  role: 'user' | 'model';
-  text: string;
-}
-
-const conversationHistory: HistoryMessage[] = [];
+import { ChatHistoryMessage } from '../../core/interfaces/app.interface';
 
 export const chatFlow = ai.defineFlow(
     {
         name: 'chatFlow',
         inputSchema: z.object({
             prompt: z.string(),
+            history: z.array(z.object({
+                role: z.enum(['user', 'model']),
+                text: z.string(),
+            })).default([]),
         }),
     },
-    async ({ prompt }) => {
-        // Construct the formatted conversation history string
-        let historyText = '';
-        for (const msg of conversationHistory) {
-            if (msg.role === 'user') {
-                historyText += `User: ${msg.text}\n`;
-            } else {
-                historyText += `Assistant: ${msg.text}\n`;
-            }
-        }
+    async ({ prompt, history }) => {
+        const historyText = (history as ChatHistoryMessage[])
+            .map((msg) => (msg.role === 'user' ? `User: ${msg.text}` : `Assistant: ${msg.text}`))
+            .join('\n');
 
         const response = await ai.generate({
             prompt: `
@@ -43,16 +35,10 @@ export const chatFlow = ai.defineFlow(
       Conversation History so far:
       ${historyText}
       User Question:
-      ${prompt}
+${prompt}
       `,
         });
 
-        const reply = response.text;
-
-        // Append to local history variable
-        conversationHistory.push({ role: 'user', text: prompt });
-        conversationHistory.push({ role: 'model', text: reply });
-
-        return reply;
+        return response.text;
     }
 );

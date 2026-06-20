@@ -15,3 +15,8 @@ export interface ChatMessage {
   sender: 'user' | 'assistant';
   timestamp: Date;
 }
+
+export interface ChatHistoryMessage {
+  role: 'user' | 'model';
+  text: string;
+}
