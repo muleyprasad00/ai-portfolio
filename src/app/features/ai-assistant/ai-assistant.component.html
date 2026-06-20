@@ -1,0 +1,148 @@
+<div class="page-container page-container--narrow">
+    <div class="page-header">
+        <h1>AI Portfolio Assistant</h1>
+        <p class="page-subtitle">Ask me anything about my projects and experience</p>
+    </div>
+
+    <div class="mode-switch" role="tablist" aria-label="Assistant mode">
+        <button type="button" class="mode-button" [class.active]="mode() === 'chat'"
+            [attr.aria-pressed]="mode() === 'chat'" (click)="setMode('chat')">
+            <mat-icon>chat</mat-icon>
+            <span>Chat</span>
+        </button>
+        <button type="button" class="mode-button" [class.active]="mode() === 'search'"
+            [attr.aria-pressed]="mode() === 'search'" (click)="setMode('search')">
+            <mat-icon>search</mat-icon>
+            <span>Search</span>
+        </button>
+    </div>
+
+    <div class="assistant-layout">
+        @if (mode() === 'chat') {
+        <div class="page-card chat-card">
+            <div class="chat-header">
+                <mat-icon class="ai-icon">smart_toy</mat-icon>
+                <div>
+                    <h2>Chat</h2>
+                    <p class="chat-description">
+                        @if (assistantAvailable()) {
+                        Powered by portfolio data - ask about skills, projects, or experience
+                        } @else {
+                        Assistant unavailable - switch to search to browse the portfolio
+                        }
+                    </p>
+                </div>
+            </div>
+
+            <div class="messages-container" #messagesContainer>
+                @if (messages().length === 0) {
+                <div class="empty-state">
+                    <mat-icon>chat</mat-icon>
+                    <p>No messages yet. Start a conversation!</p>
+                </div>
+                }
+
+                @for (message of messages(); track message.id) {
+                <div class="message" [class.user]="message.sender === 'user'"
+                    [class.assistant]="message.sender === 'assistant'">
+                    <div class="message-content">
+                        @if (message.sender === 'assistant') {
+                        <mat-icon class="message-icon">smart_toy</mat-icon>
+                        }
+                        <div class="message-text">{{ message.text }}</div>
+                    </div>
+                    <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+                </div>
+                }
+
+                @if (isTyping()) {
+                <div class="message assistant typing">
+                    <div class="message-content">
+                        <mat-icon class="message-icon">smart_toy</mat-icon>
+                        <div class="message-text typing-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="chat-actions">
+                <mat-form-field class="chat-input-field" appearance="outline">
+                    <mat-label>Type your message...</mat-label>
+                    <input matInput [(ngModel)]="userMessage" (keyup.enter)="sendMessage()"
+                        placeholder="Ask me something..." />
+                </mat-form-field>
+                <button type="button" class="send-button" (click)="sendMessage()" [disabled]="!userMessage.trim()"
+                    aria-label="Send message">
+                    <mat-icon>send</mat-icon>
+                </button>
+            </div>
+
+            @if (!assistantAvailable()) {
+            <div class="fallback-banner">
+                The assistant backend is unavailable right now. Use Search to browse the portfolio data.
+            </div>
+            }
+        </div>
+        }
+        @if (mode() === 'search') {
+        <div class="page-card info-card search-card">
+            <div class="search-header">
+                <div>
+                    <h3>Portfolio Search</h3>
+                    <p>Search the portfolio when chat is unavailable, or use it as a quick lookup tool.</p>
+                </div>
+            </div>
+
+            <mat-form-field class="search-input-field" appearance="outline">
+                <mat-label>Search portfolio data</mat-label>
+                <input matInput [(ngModel)]="searchQuery" (ngModelChange)="updateSearch($event)"
+                    placeholder="Try Angular, AG Grid, projects, or Kanaka" />
+            </mat-form-field>
+
+            <div class="faq-grid">
+                @for (faq of faqItems; track faq.question) {
+                <button type="button" class="faq-button" (click)="runFaq(faq)">
+                    <mat-icon>help_outline</mat-icon>
+                    <span>{{ faq.question }}</span>
+                </button>
+                }
+            </div>
+
+            <div class="search-results">
+                @if (searchResults().length === 0) {
+                <div class="search-empty">
+                    No matches yet. Try a skill, project name, company, or contact detail.
+                </div>
+                } @else {
+                @for (result of searchResults(); track result.id) {
+                <div class="search-result">
+                    <div class="search-result-head">
+                        <span class="result-type">{{ result.type }}</span>
+                        <h4>{{ result.title }}</h4>
+                    </div>
+                    <p>{{ result.summary }}</p>
+                </div>
+                }
+                }
+            </div>
+        </div>
+        } @else {
+        <div class="page-card info-card">
+            <h3>About This Assistant</h3>
+            <p>
+                This assistant uses the portfolio data bundled with the site and falls back to local
+                answers if the backend is unavailable.
+            </p>
+            <p class="features-title">Current Features:</p>
+            <ul>
+                <li>Answer questions about my professional background</li>
+                <li>Discuss my technical skills and expertise</li>
+                <li>Learn about my projects and case studies</li>
+                <li>Get recommendations for collaboration</li>
+            </ul>
+        </div>
+        }
+    </div>
+</div>

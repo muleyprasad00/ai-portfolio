@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  DestroyRef,
   ChangeDetectionStrategy,
   signal,
   inject,
@@ -13,109 +14,57 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { AiAssistantService } from '../../services/ai-assistant.service';
-import { ChatMessage } from '../../core/interfaces/app.interface';
+import { ChatMessage, PortfolioFaqItem, PortfolioSearchResult } from '../../core/interfaces/app.interface';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-ai-assistant',
   standalone: true,
   imports: [CommonModule, FormsModule, MatInputModule, MatIconModule, MatFormFieldModule],
-  template: `
-    <div class="page-container page-container--narrow">
-      <div class="page-header">
-        <h1>AI Portfolio Assistant</h1>
-        <p class="page-subtitle">Ask me anything about my projects and experience</p>
-      </div>
-
-      <div class="assistant-layout">
-        <div class="page-card chat-card">
-          <div class="chat-header">
-            <mat-icon class="ai-icon">smart_toy</mat-icon>
-            <div>
-              <h2>Chat</h2>
-              <p class="chat-description">Powered by portfolio data - ask about skills, projects, or experience</p>
-            </div>
-          </div>
-
-          <div class="messages-container" #messagesContainer>
-            @if (messages().length === 0) {
-              <div class="empty-state">
-                <mat-icon>chat</mat-icon>
-                <p>No messages yet. Start a conversation!</p>
-              </div>
-            }
-
-            @for (message of messages(); track message.id) {
-              <div
-                class="message"
-                [class.user]="message.sender === 'user'"
-                [class.assistant]="message.sender === 'assistant'"
-              >
-                <div class="message-content">
-                  @if (message.sender === 'assistant') {
-                    <mat-icon class="message-icon">smart_toy</mat-icon>
-                  }
-                  <div class="message-text">{{ message.text }}</div>
-                </div>
-                <span class="message-time">{{ formatTime(message.timestamp) }}</span>
-              </div>
-            }
-
-            @if (isTyping()) {
-              <div class="message assistant typing">
-                <div class="message-content">
-                  <mat-icon class="message-icon">smart_toy</mat-icon>
-                  <div class="message-text typing-dots">
-                    <span></span><span></span><span></span>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-
-          <div class="chat-actions">
-            <mat-form-field class="chat-input-field" appearance="outline">
-              <mat-label>Type your message...</mat-label>
-              <input
-                matInput
-                [(ngModel)]="userMessage"
-                (keyup.enter)="sendMessage()"
-                placeholder="Ask me something..."
-              />
-            </mat-form-field>
-            <button
-              type="button"
-              class="send-button"
-              (click)="sendMessage()"
-              [disabled]="!userMessage.trim()"
-              aria-label="Send message"
-            >
-              <mat-icon>send</mat-icon>
-            </button>
-          </div>
-        </div>
-
-        <div class="page-card info-card">
-          <h3>About This Assistant</h3>
-          <p>
-            This assistant uses the portfolio data bundled with the site and responds without a
-            backend.
-          </p>
-          <p class="features-title">Current Features:</p>
-          <ul>
-            <li>Answer questions about my professional background</li>
-            <li>Discuss my technical skills and expertise</li>
-            <li>Learn about my projects and case studies</li>
-            <li>Get recommendations for collaboration</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './ai-assistant.component.html',
   styles: [
     `
       .assistant-layout {
         display: grid;
         gap: 24px;
+      }
+
+      .mode-switch {
+        display: inline-grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 4px;
+        padding: 4px;
+        margin-bottom: 16px;
+        border: 1px solid #dbe3ee;
+        border-radius: 10px;
+        background: #ffffff;
+        width: fit-content;
+      }
+
+      .mode-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-width: 112px;
+        border: 0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        background: transparent;
+        color: #475569;
+        font-weight: 600;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      .mode-button.active {
+        background: #0f172a;
+        color: #ffffff;
+      }
+
+      .mode-button mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
       }
 
       .chat-card {
@@ -275,6 +224,17 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
         background: #ffffff;
       }
 
+      .fallback-banner {
+        margin: 0 24px 24px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
       .chat-input-field {
         flex: 1;
       }
@@ -318,6 +278,110 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
         font-size: 14px;
       }
 
+      .search-card {
+        display: grid;
+        gap: 16px;
+      }
+
+      .search-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e3a5f;
+      }
+
+      .search-header p {
+        margin: 6px 0 0;
+        color: #64748b;
+        line-height: 1.5;
+        font-size: 14px;
+      }
+
+      .search-input-field {
+        width: 100%;
+      }
+
+      .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+      }
+
+      .faq-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1px solid #dbe3ee;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #0f172a;
+        text-align: left;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .faq-button mat-icon {
+        flex-shrink: 0;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #6366f1;
+      }
+
+      .search-results {
+        display: grid;
+        gap: 12px;
+      }
+
+      .search-empty {
+        padding: 16px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #64748b;
+        font-size: 14px;
+      }
+
+      .search-result {
+        padding: 14px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: #ffffff;
+      }
+
+      .search-result-head {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+
+      .result-type {
+        display: inline-flex;
+        width: fit-content;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #e0e7ff;
+        color: #3730a3;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      .search-result h4 {
+        margin: 0;
+        font-size: 15px;
+        color: #0f172a;
+      }
+
+      .search-result p {
+        margin: 0;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
       .features-title {
         font-weight: 700;
         color: #1e3a5f !important;
@@ -336,12 +400,25 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
       }
 
       @media (max-width: 768px) {
+        .mode-switch {
+          width: 100%;
+        }
+
+        .mode-button {
+          min-width: 0;
+          width: 100%;
+        }
+
         .message-content {
           max-width: 100%;
         }
 
         .messages-container {
           max-height: 320px;
+        }
+
+        .faq-grid {
+          grid-template-columns: 1fr;
         }
       }
     `,
@@ -350,15 +427,29 @@ import { ChatMessage } from '../../core/interfaces/app.interface';
 })
 export class AiAssistantComponent implements OnInit {
   private aiService = inject(AiAssistantService);
+  private destroyRef = inject(DestroyRef);
 
   messages = signal<ChatMessage[]>([]);
   userMessage = '';
   isTyping = signal(false);
+  assistantAvailable = signal(true);
+  mode = signal<'chat' | 'search'>('chat');
+  searchQuery = '';
+  searchResults = signal<PortfolioSearchResult[]>(this.aiService.searchPortfolio(''));
+  faqItems: PortfolioFaqItem[] = this.aiService.getFaqItems();
 
   @ViewChild('messagesContainer', { static: false })
   private messagesContainer!: ElementRef<HTMLDivElement>;
 
   ngOnInit(): void {
+    this.updateSearch('');
+
+    this.aiService.backendAvailable$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((available) => {
+        this.assistantAvailable.set(available);
+      });
+
     this.aiService.addMessage(
       "Hi! I'm your portfolio assistant. Ask me anything about Prasad's background, skills, projects, or experience!",
       'assistant'
@@ -370,6 +461,23 @@ export class AiAssistantComponent implements OnInit {
     });
   }
 
+  setMode(mode: 'chat' | 'search'): void {
+    this.mode.set(mode);
+    if (mode === 'search' && !this.searchQuery.trim()) {
+      this.updateSearch('');
+    }
+  }
+
+  updateSearch(query: string): void {
+    this.searchQuery = query;
+    this.searchResults.set(this.aiService.searchPortfolio(query));
+  }
+
+  runFaq(faq: PortfolioFaqItem): void {
+    this.setMode('search');
+    this.updateSearch(faq.query);
+  }
+
   sendMessage(): void {
     if (!this.userMessage.trim()) return;
 
@@ -377,7 +485,7 @@ export class AiAssistantComponent implements OnInit {
     this.aiService.addMessage(userMsg, 'user');
     this.userMessage = '';
     this.isTyping.set(true);
-    
+
     // Add a placeholder assistant message and keep its ID for streaming updates
     const assistantMsgId = this.aiService.addMessage('', 'assistant');
 

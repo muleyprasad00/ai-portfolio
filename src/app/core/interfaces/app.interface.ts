@@ -20,3 +20,15 @@ export interface ChatHistoryMessage {
   role: 'user' | 'model';
   text: string;
 }
+
+export interface PortfolioSearchResult {
+  id: string;
+  type: 'Skill' | 'Project' | 'Experience' | 'Profile' | 'Contact';
+  title: string;
+  summary: string;
+}
+
+export interface PortfolioFaqItem {
+  question: string;
+  query: string;
+}
