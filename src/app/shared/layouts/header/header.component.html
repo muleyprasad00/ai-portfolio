@@ -1,0 +1,51 @@
+<header class="app-header">
+  <div class="header-inner">
+    <a routerLink="/home" class="nav-brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#22c55e" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+      </span>
+      <span class="brand-name">{{ name }}</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/home' }"
+          class="nav-link"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <button
+      type="button"
+      class="menu-toggle"
+      (click)="toggleMenu.set(!toggleMenu())"
+      [attr.aria-expanded]="toggleMenu()"
+      aria-label="Toggle navigation menu"
+    >
+      <mat-icon>{{ toggleMenu() ? 'close' : 'menu' }}</mat-icon>
+    </button>
+  </div>
+
+  @if (toggleMenu()) {
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/home' }"
+          class="nav-link"
+          (click)="toggleMenu.set(false)"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  }
+</header>

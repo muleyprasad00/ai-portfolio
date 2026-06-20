@@ -1,0 +1,29 @@
+<mat-card class="skill-card">
+  <mat-card-header>
+    <div class="card-header">
+      @if (skill().icon) {
+      <mat-icon class="skill-icon">{{ skill().icon }}</mat-icon>
+      }
+      <h3 class="skill-name">{{ skill().name }}</h3>
+    </div>
+    <span class="category-badge">{{ skill().category }}</span>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (skill().description) {
+    <p class="skill-description">{{ skill().description }}</p>
+    }
+
+    <div class="proficiency-section">
+      <div class="proficiency-header">
+        <span>Proficiency</span>
+        <span class="proficiency-value">{{ skill().proficiency }}%</span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="skill().proficiency"
+        class="proficiency-bar"
+      ></mat-progress-bar>
+    </div>
+  </mat-card-content>
+</mat-card>

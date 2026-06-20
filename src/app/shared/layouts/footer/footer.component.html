@@ -1,0 +1,50 @@
+<footer class="app-footer">
+  <div class="footer-content">
+    <div class="footer-brand">
+      <div class="brand-row">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#22c55e" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </span>
+        <span class="brand-name">{{ contactInfo.name }}</span>
+      </div>
+      <p class="brand-tagline">Senior Frontend Developer</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <nav class="footer-nav">
+        <a routerLink="/home">Home</a>
+        <a routerLink="/about">About</a>
+        <a routerLink="/projects">Projects</a>
+        <a routerLink="/contact">Contact</a>
+      </nav>
+    </div>
+
+    <div class="footer-section">
+      <h4>Connect</h4>
+      <div class="social-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" class="social-link">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" class="social-link">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" class="social-link">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <p><mat-icon>mail</mat-icon> {{ contactInfo.email }}</p>
+      <p><mat-icon>phone</mat-icon> {{ contactInfo.phone }}</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ date.getFullYear() }} {{ contactInfo.name }}. All rights reserved.</p>
+  </div>
+</footer>

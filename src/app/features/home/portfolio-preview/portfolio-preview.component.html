@@ -1,0 +1,91 @@
+<div class="portfolio-preview">
+  <!-- <header class="preview-title-bar">
+    <h2>Portfolio Website Preview</h2>
+  </header> -->
+
+  <div class="preview-frame">
+    <!-- Navigation -->
+    <!-- <nav class="preview-nav">
+      <div class="nav-brand">
+        <span class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="#22c55e" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </span>
+        <span class="brand-name">{{ name }}</span>
+      </div>
+
+      <div class="nav-links">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" routerLinkActive="active" class="nav-link">
+            {{ item.label }}
+          </a>
+        }
+      </div>
+
+      <button type="button" class="theme-toggle" aria-label="Toggle theme">
+        <mat-icon>dark_mode</mat-icon>
+      </button>
+    </nav> -->
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <p class="hero-greeting">Hi, I'm</p>
+        <h1 class="hero-name">{{ name }}</h1>
+        <h2 class="hero-title">{{ title }}</h2>
+        <p class="hero-bio">{{ bio }}</p>
+
+        <div class="tech-badges">
+          @for (tech of techStack; track tech.name) {
+          <span class="tech-badge">
+            <mat-icon [style.color]="tech.color">{{ tech.icon }}</mat-icon>
+            {{ tech.name }}
+          </span>
+          }
+        </div>
+
+        <div class="hero-actions">
+          <a href="assets/resume.pdf" download="Prasad_Muley_Resume.pdf" class="btn btn-primary">
+            Download Resume
+          </a>
+          <a routerLink="/contact" class="btn btn-outline">Contact Me</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="profile-ring">
+          <img src="profile.jpg" [alt]="'Profile photo of ' + name" class="profile-photo" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects-section">
+      <div class="projects-header">
+        <h3>Projects</h3>
+        <a routerLink="/projects" class="view-all-link">View All &rarr;</a>
+      </div>
+
+      <div class="projects-grid">
+        @for (project of featuredProjects; track project.id) {
+        <article class="project-card">
+          <div class="project-card-header">
+            <mat-icon class="project-icon">{{ project.previewIcon }}</mat-icon>
+            <div>
+              <h4 class="project-title">{{ project.title }}</h4>
+              <span class="project-category">{{ project.category }}</span>
+            </div>
+          </div>
+          <p class="project-description">{{ project.shortDescription }}</p>
+          @if (project.link) {
+          <a [href]="project.link" target="_blank" rel="noopener noreferrer" class="project-link">
+            View Project &rarr;
+          </a>
+          }
+        </article>
+        }
+      </div>
+    </section>
+  </div>
+</div>

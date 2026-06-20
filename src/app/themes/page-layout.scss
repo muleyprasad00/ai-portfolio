@@ -1,0 +1,116 @@
+@use './portfolio-theme' as theme;
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-container--narrow {
+  max-width: 900px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-header h1 {
+  @include theme.page-header-title;
+}
+
+.page-subtitle {
+  @include theme.page-subtitle;
+}
+
+.page-section {
+  margin-bottom: 48px;
+}
+
+.page-section h2 {
+  @include theme.section-heading;
+}
+
+.page-section p {
+  margin: 12px 0;
+  line-height: 1.8;
+  color: theme.$text-secondary;
+  font-size: 16px;
+}
+
+.page-card {
+  @include theme.themed-card;
+  padding: 24px;
+}
+
+.page-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.page-grid--2 {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.page-grid--3 {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.page-stat-card {
+  @include theme.themed-card;
+  padding: 24px;
+  text-align: center;
+
+  h3 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: theme.$purple;
+  }
+
+  p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: theme.$text-secondary;
+  }
+}
+
+.page-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: theme.$text-navy;
+  background: theme.$page-bg;
+  border: 1px solid theme.$border-light;
+  border-radius: 999px;
+}
+
+.page-filter-btn {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid theme.$border-light;
+  background: theme.$card-bg;
+  color: theme.$text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: theme.$purple-light;
+    color: theme.$purple;
+  }
+
+  &.active {
+    background: theme.$purple;
+    border-color: theme.$purple;
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -7,10 +7,71 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 
+import 'dotenv/config';
+
+import { askPortfolioAssistant } from '../src/app/genkit/flows/portfolio-chat';
+
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+// API: Mock Genkit proxy that streams responses (for local development)
+// app.post('/api/genkit-stream', express.json(), (req, res) => {
+//   const prompt = (req.body && req.body.prompt) || '';
+//   const simulated = `Assistant response to: ${prompt} — This is a simulated streaming response from the Genkit proxy.`;
+//   const words = simulated.split(/(\s+)/);
+
+//   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+//   res.setHeader('Cache-Control', 'no-cache');
+//   res.setHeader('Connection', 'keep-alive');
+//   // send headers immediately
+//   if (res.flushHeaders) res.flushHeaders();
+
+//   let i = 0;
+//   const interval = setInterval(() => {
+//     if (i >= words.length) {
+//       clearInterval(interval);
+//       try {
+//         res.end();
+//       } catch (e) {
+//         // ignore
+//       }
+//       return;
+//     }
+
+//     try {
+//       res.write(words[i]);
+//     } catch (e) {
+//       clearInterval(interval);
+//       try { res.end(); } catch (_) { }
+//     }
+//     i++;
+//   }, 100);
+// });
+app.post('/api/genkit-stream', express.json(), async (req, res) => {
+
+  try {
+
+    const prompt = req.body?.prompt ?? '';
+
+    const answer = await askPortfolioAssistant(prompt);
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache');
+
+    res.write(answer);
+    res.end();
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).end(
+      'Sorry, something went wrong.'
+    );
+  }
+});
 
 /**
  * Example Express Rest API endpoints can be defined here.

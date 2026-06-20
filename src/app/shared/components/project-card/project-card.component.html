@@ -1,0 +1,77 @@
+<mat-card class="project-card" [class.featured]="project().featured">
+    <!-- Image Container with Overlay -->
+    @if (project().image) {
+    <div class="image-container">
+        <img [src]="project().image" [alt]="project().title" class="project-image" loading="lazy" />
+        <div class="image-overlay">
+            <div class="overlay-actions">
+                @if (project().link) {
+                <a [href]="project().link" target="_blank" rel="noopener noreferrer" mat-icon-button
+                    class="overlay-btn live-demo-btn" [matTooltip]="'View Live Demo'" aria-label="View Live Demo">
+                    <mat-icon>open_in_new</mat-icon>
+                </a>
+                }
+                @if (project().github) {
+                <a [href]="project().github" target="_blank" rel="noopener noreferrer" mat-icon-button
+                    class="overlay-btn github-btn" [matTooltip]="'View on GitHub'" aria-label="View on GitHub">
+                    <mat-icon>code</mat-icon>
+                </a>
+                }
+            </div>
+        </div>
+        @if (project().featured) {
+        <span class="featured-badge">⭐ Featured</span>
+        }
+    </div>
+    }
+
+    <!-- Card Content -->
+    <div class="card-content">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="title-category">
+                <h3 class="project-title">{{ project().title }}</h3>
+                @if (project().category) {
+                <span class="project-category" [attr.aria-label]="'Category: ' + project().category">
+                    {{ project().category }}
+                </span>
+                }
+            </div>
+        </div>
+
+        <!-- Description -->
+        <p class="project-description">{{ project().shortDescription }}</p>
+
+        <!-- Technologies Tags -->
+        @if (project().technologies && project().technologies.length > 0) {
+        <div class="technologies-section">
+            <p class="tech-label">Tech Stack</p>
+            <div class="tech-tags">
+                @for (tech of project().technologies; track tech) {
+                <span class="tech-tag" [attr.aria-label]="'Technology: ' + tech">
+                    {{ tech }}
+                </span>
+                }
+            </div>
+        </div>
+        }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="card-actions">
+        @if (project().link) {
+        <a [href]="project().link" target="_blank" rel="noopener noreferrer" mat-raised-button color="primary"
+            class="action-btn primary-btn" aria-label="View Live Demo">
+            <mat-icon>launch</mat-icon>
+            <span>Live Demo</span>
+        </a>
+        }
+        @if (project().github) {
+        <a [href]="project().github" target="_blank" rel="noopener noreferrer" mat-stroked-button color="accent"
+            class="action-btn github-btn" aria-label="View on GitHub">
+            <mat-icon>code</mat-icon>
+            <span>GitHub</span>
+        </a>
+        }
+    </div>
+</mat-card>
