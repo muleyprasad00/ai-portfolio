@@ -1,6 +1,7 @@
 const fs = require("fs");
 const { Octokit } = require("@octokit/rest");
 const { reviewCode } = require("./ai");
+const path = require("path");
 
 const event = JSON.parse(
     fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
@@ -27,7 +28,15 @@ async function main() {
         console.log(`File: ${file.filename}`);
 
         try {
-            const content = fs.readFileSync(file.filename, "utf8");
+            console.log("Current directory:", process.cwd());
+            console.log("Trying to read:", file.filename);
+
+            const fullPath = path.join(process.cwd(), file.filename);
+
+            console.log(fullPath);
+
+            // const content = fs.readFileSync(file.filename, "utf8");
+            const content = fs.readFileSync(fullPath, "utf8");
 
             console.log(`Reviewing ${file.filename}`);
 
