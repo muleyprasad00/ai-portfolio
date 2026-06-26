@@ -1,5 +1,6 @@
 const fs = require("fs");
 const { Octokit } = require("@octokit/rest");
+const { reviewCode } = require("./ai");
 
 const event = JSON.parse(
     fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
@@ -28,8 +29,11 @@ async function main() {
         try {
             const content = fs.readFileSync(file.filename, "utf8");
 
-            console.log(content.substring(0, 500)); // Print first 500 characters
-            console.log("---------------------------------\n");
+            console.log(`Reviewing ${file.filename}`);
+
+            const result = await reviewCode(file.filename, content);
+
+            console.log(result);
         } catch (err) {
             console.log(`Cannot read ${file.filename}`);
         }
