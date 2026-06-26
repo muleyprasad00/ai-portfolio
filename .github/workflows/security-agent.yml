@@ -22,3 +22,8 @@ jobs:
 
       - name: Run Security Agent
         run: node scripts/security-agent.js
+
+      - name: Run Security Agent
+        run: node scripts/security-agent.js
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
