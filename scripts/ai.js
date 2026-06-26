@@ -1,5 +1,5 @@
 const OpenAI = require("openai");
-
+console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
