@@ -41,9 +41,6 @@ jobs:
 
       - name: Run Security Agent
         run: node scripts/security-agent.js
-
-      - name: Run Security Agent
-        run: node scripts/security-agent.js
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
