@@ -1,5 +1,5 @@
 const OpenAI = require("openai");
-console.log(!!process.env.GITHUB_MODELS_TOKEN);
+console.log(!!process.env.G_MODELS_TOKEN);
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });

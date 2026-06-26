@@ -27,4 +27,4 @@ jobs:
         run: node scripts/security-agent.js
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+            G_MODELS_TOKEN: ${{ secrets.G_MODELS_TOKEN }}
