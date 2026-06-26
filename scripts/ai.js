@@ -1,11 +1,11 @@
 const OpenAI = require("openai");
 console.log(!!process.env.G_MODELS_TOKEN);
 const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.G_MODELS_TOKEN,
 });
 
 async function reviewCode(filename, code) {
-    console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
+    console.log("G_MODELS_TOKEN exists:", !!process.env.G_MODELS_TOKEN);
     const response = await client.responses.create({
         model: "gpt-4.1-mini",
         input: `
