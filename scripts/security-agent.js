@@ -1,4 +1,6 @@
 const fs = require("fs");
+const { postReviewComment } = require("./github");
+const { buildReviewComment } = require("./comment");
 
 const event = JSON.parse(
     fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
