@@ -5,6 +5,7 @@ const client = new OpenAI({
 });
 
 async function reviewCode(filename, code) {
+    console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
     const response = await client.responses.create({
         model: "gpt-5.5",
         input: `
