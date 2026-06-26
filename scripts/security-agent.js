@@ -1,69 +1,29 @@
 const fs = require("fs");
-const { Octokit } = require("@octokit/rest");
-const { reviewCode } = require("./ai");
-const path = require("path");
-const { reviewExtensions, skipFiles, skipFolders } = require("./config");
-
 
 const event = JSON.parse(
     fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
 );
 
-const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
-});
+const { getChangedFiles } = require("./github");
+const { reviewCode } = require("./ai");
 
 async function main() {
-    const owner = event.repository.owner.login;
-    const repo = event.repository.name;
-    const pull_number = event.pull_request.number;
 
-    const response = await octokit.pulls.listFiles({
-        owner,
-        repo,
-        pull_number,
-    });
+    const files = await getChangedFiles(event);
 
-    console.log("========== Changed Files ==========\n");
+    for (const file of files) {
 
-    for (const file of response.data) {
-        console.log(`File: ${file.filename}`);
-
-        // Skip files based on configuration
-        if (skipFiles.includes(file.filename)) {
-            console.log(`Skipping ${file.filename}`);
+        if (!file.patch) {
             continue;
         }
 
-        // Skip files in skipped folders
-        if (skipFolders.some((folder) => file.filename.startsWith(folder))) {
-            console.log(`Skipping ${file.filename}`);
-            continue;
-        }
+        const result = await reviewCode(
+            file.filename,
+            file.patch
+        );
 
-        // Only review files with specified extensions
-        if (!reviewExtensions.some((ext) => file.filename.endsWith(ext))) {
-            console.log(`Skipping ${file.filename}`);
-            continue;
-        }
-
-        try {
-            const fullPath = path.join(process.cwd(), file.filename);
-
-            console.log(fullPath);
-
-            const content = fs.readFileSync(fullPath, "utf8");
-
-            console.log(`Reviewing ${file.filename}`);
-
-            const result = await reviewCode(file.filename, content);
-
-        } catch (err) {
-            console.error(`Cannot read ${file.filename}`);
-            console.error(err);
-            console.error(err.stack);
-        }
+        console.log(result);
     }
 }
 
-main().catch(console.error);
+main();

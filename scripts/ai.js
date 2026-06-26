@@ -1,6 +1,5 @@
 const OpenAI = require("openai");
-console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
-console.log(process.env.OPENAI_API_KEY?.substring(0, 8));
+console.log(!!process.env.GITHUB_MODELS_TOKEN);
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -8,7 +7,7 @@ const client = new OpenAI({
 async function reviewCode(filename, code) {
     console.log("OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
     const response = await client.responses.create({
-        model: "gpt-5.5",
+        model: "gpt-4.1-mini",
         input: `
 You are a Senior Application Security Engineer.
 
