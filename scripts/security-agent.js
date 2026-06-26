@@ -44,7 +44,9 @@ async function main() {
 
             console.log(result);
         } catch (err) {
-            console.log(`Cannot read ${file.filename}`);
+            console.error(`Cannot read ${file.filename}`);
+            console.error(err);
+            console.error(err.stack);
         }
     }
 }
