@@ -5,10 +5,8 @@ const event = JSON.parse(
     fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8")
 );
 
-const token = process.env.GITHUB_TOKEN;
-
 const octokit = new Octokit({
-    auth: token,
+    auth: process.env.GITHUB_TOKEN,
 });
 
 async function main() {
@@ -16,20 +14,26 @@ async function main() {
     const repo = event.repository.name;
     const pull_number = event.pull_request.number;
 
-    console.log(`Repository: ${owner}/${repo}`);
-    console.log(`PR Number: ${pull_number}`);
-
     const response = await octokit.pulls.listFiles({
         owner,
         repo,
         pull_number,
     });
 
-    console.log("\nChanged Files:");
+    console.log("========== Changed Files ==========\n");
 
-    response.data.forEach(file => {
-        console.log(file.filename);
-    });
+    for (const file of response.data) {
+        console.log(`File: ${file.filename}`);
+
+        try {
+            const content = fs.readFileSync(file.filename, "utf8");
+
+            console.log(content.substring(0, 500)); // Print first 500 characters
+            console.log("---------------------------------\n");
+        } catch (err) {
+            console.log(`Cannot read ${file.filename}`);
+        }
+    }
 }
 
 main().catch(console.error);
