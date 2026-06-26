@@ -17,12 +17,13 @@ async function main() {
             continue;
         }
 
-        const result = await reviewCode(
-            file.filename,
-            file.patch
-        );
+        const review = await reviewCode(file.filename, file.patch);
 
-        console.log(result);
+        const reviewResult = JSON.parse(review);
+
+        const comment = buildReviewComment(reviewResult);
+
+        await postReviewComment(event, comment);
     }
 }
 
