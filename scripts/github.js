@@ -1,9 +1,11 @@
 const { Octokit } = require("@octokit/rest");
 
+
+const octokit = new Octokit({
+    auth: process.env.GITHUB_TOKEN
+});
+
 async function getChangedFiles(event) {
-    const octokit = new Octokit({
-        auth: process.env.GITHUB_TOKEN
-    });
 
     const owner = event.repository.owner.login;
     const repo = event.repository.name;
@@ -34,9 +36,9 @@ async function createReviewComment(event, body) {
 async function postReviewComment(event, body) {
 
     await octokit.pulls.createReview({
-        owner,
-        repo,
-        pull_number,
+        owner: event.repository.owner.login,
+        repo: event.repository.name,
+        pull_number: event.pull_request.number,
 
         event: "COMMENT",
 
