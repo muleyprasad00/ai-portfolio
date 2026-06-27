@@ -7,6 +7,10 @@ on:
       - synchronize
       - reopened
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   security-review:
     runs-on: ubuntu-latest
@@ -20,10 +24,11 @@ jobs:
         with:
           node-version: 22
 
-      - name: Run Security Agent
-        run: node scripts/security-agent.js
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run Security Agent
         run: node scripts/security-agent.js
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            G_MODELS_TOKEN: ${{ secrets.G_MODELS_TOKEN }}
